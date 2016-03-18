@@ -8,8 +8,7 @@
 
 int get_dirs_of_first_level(char *path, int argc, char *argv[]);
 
-pid_t pids[256];
-int c = 0;
+int children = 0;
 
 int main(int argc, char *argv[]) {
     char *path = getenv("PATH_TO_BROWSE");
@@ -75,7 +74,7 @@ int get_dirs_of_first_level(char *path, int argc, char *argv[]) {
                 }
                 _exit(tn);
             } else {
-                pids[c++] = pid;
+                children++;
             }
         }
     }
@@ -86,9 +85,9 @@ int get_dirs_of_first_level(char *path, int argc, char *argv[]) {
             sleep(15);
         }
     }
-    for (int i = 0; i < c; ++i) {
+    for (int i = 0; i < children; ++i) {
         int status;
-        waitpid(pids[i], &status, 0);
+        wait(&status);
         b += WEXITSTATUS(status);
     }
     for (int i = 1; i < argc; ++i) {

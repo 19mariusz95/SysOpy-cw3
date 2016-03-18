@@ -8,8 +8,7 @@
 
 int get_dirs_of_first_level(char *path, int argc, char *argv[]);
 
-pid_t pids[256];
-int c = 0;
+int chilren = 0;
 
 int main(int argc, char *argv[]) {
     char *path = argv[1];
@@ -49,7 +48,7 @@ int get_dirs_of_first_level(char *path, int argc, char *argv[]) {
                 tn = execv("./fcounter2", argv);
                 _exit(tn);
             } else {
-                pids[c++] = pid;
+                chilren++;
             }
         }
     }
@@ -60,9 +59,9 @@ int get_dirs_of_first_level(char *path, int argc, char *argv[]) {
             sleep(15);
         }
     }
-    for (int i = 0; i < c; ++i) {
+    for (int i = 0; i < chilren; ++i) {
         int status;
-        waitpid(pids[i], &status, 0);
+        wait(&status);
         b += WEXITSTATUS(status);
     }
     for (int i = 1; i < argc; ++i) {
