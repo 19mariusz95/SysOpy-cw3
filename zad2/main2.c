@@ -75,10 +75,6 @@ int get_dirs_of_first_level(char *path, int argc, char *argv[]) {
     closedir(dir);
     for (int i = 1; i < argc; ++i) {
         char *arg = argv[i];
-        if (strcmp(arg, "-v") == 0) {
-            printf("path: %s my_files: %d all_files %d\n", path, a, a + b);
-            fflush(stdout);
-        }
         if (strcmp(arg, "-w") == 0) {
             sleep(15);
         }
@@ -87,6 +83,13 @@ int get_dirs_of_first_level(char *path, int argc, char *argv[]) {
         int status;
         waitpid(pids[i], &status, 0);
         b += WEXITSTATUS(status);
+    }
+    for (int i = 1; i < argc; ++i) {
+        char *arg = argv[i];
+        if (strcmp(arg, "-v") == 0) {
+            printf("path: %s my_files: %d all_files %d\n", path, a, a + b);
+            fflush(stdout);
+        }
     }
     return a + b;
 }
