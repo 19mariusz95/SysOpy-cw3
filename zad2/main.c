@@ -6,19 +6,19 @@
 #include <zconf.h>
 #include <sys/wait.h>
 
-void get_dirs_of_first_level(char *path);
+void get_dirs_of_first_level(char *path, int i, int i1);
 
 int main(int argc, char *argv[]) {
-    char *env = getenv("PATH_TO_BROWSE");
-    if (env == NULL)
-        env = "./";
-    printf("%s\n", env);
+    char *path = getenv("PATH_TO_BROWSE");
+    if (path == NULL)
+        path = "./";
+    printf("%s\n", path);
     fflush(stdout);
-    get_dirs_of_first_level(env);
+    get_dirs_of_first_level(path, 0, 0);
     return 0;
 }
 
-void get_dirs_of_first_level(char *path) {
+void get_dirs_of_first_level(char *path, int i, int i1) {
     DIR *dir = opendir(path);
     if (dir == NULL)
         return;
