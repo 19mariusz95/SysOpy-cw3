@@ -12,7 +12,7 @@ pid_t pids[256];
 int c = 0;
 
 int main(int argc, char *argv[]) {
-    char *path = argv[1];
+    char *path = getenv("PATH_TO_BROWSE");
     if (path == NULL)
         path = "./";
     return get_dirs_of_first_level(path, argc, argv);
@@ -28,6 +28,7 @@ int get_dirs_of_first_level(char *path, int argc, char *argv[]) {
         closedir(dir);
         return 0;
     }
+    char *ext = getenv("EXT_TO_BROWSE");
     int a = 0, b = 0;
     struct dirent *ent;
     size_t len = strlen(path);
@@ -40,13 +41,38 @@ int get_dirs_of_first_level(char *path, int argc, char *argv[]) {
             continue;
         strncpy(fn + len, ent->d_name, FILENAME_MAX - len);
         stat(fn, &filestat);
-        a++;
+        if (ext == NULL)
+            a++;
+        else {
+            /*char *ala = strrchr(fn, '.');
+            if (ala != NULL) {
+                if (strcmp(ala, ext) == 0)
+                    a++;
+            }*/
+        }
         if (S_ISDIR(filestat.st_mode)) {
             pid = fork();
             if (pid == 0) {
+                char *e = "PATH_TO_BROWSE=";
+                size_t tmp = strlen(e);
+                char tmp1[FILENAME_MAX + tmp];
+                strcpy(tmp1, e);
+                strncpy(tmp1 + tmp, fn, FILENAME_MAX + tmp - len);
                 int tn;
-                argv[1] = fn;
-                tn = execv("./fcounter2", argv);
+                if (ext != NULL) {
+                    char *etmp = "EXT_TO_BROWSE=";
+                    size_t etmpsize = strlen(etmp);
+                    char extmp[strlen(ext) + etmpsize + 100];
+                    strcpy(extmp, etmp);
+                    strcpy(extmp + etmpsize, ext);
+                    printf(extmp);
+                    char *env[] = {tmp1, extmp};
+                    printf(extmp);
+                    tn = execve("./fcounter3", argv, env);
+                } else {
+                    char *env[] = {tmp1};
+                    tn = execve("./fcounter3", argv, env);
+                }
                 _exit(tn);
             } else {
                 pids[c++] = pid;
