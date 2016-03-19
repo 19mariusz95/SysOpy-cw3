@@ -17,17 +17,17 @@ void *child_stack;
 
 
 int fn(void *arg) {
+    struct timespec t1, t2;
+    clock_gettime(CLOCK_REALTIME, &t1);
     licznik++;
-    _exit(0);
+    clock_gettime(CLOCK_REALTIME, &t2);
+    _exit(t2.tv_nsec - t1.tv_nsec);
 }
 
 void fun1() {
     pid_t pid = fork();
     if (pid == 0) {
-        clock_t t = clock();
-        licznik++;
-        t = clock() - t;
-        _exit(t);
+        fn(NULL);
     } else {
         int status;
         wait(&status);
@@ -38,10 +38,7 @@ void fun1() {
 void fun2() {
     pid_t pid = vfork();
     if (pid == 0) {
-        clock_t t = clock();
-        licznik++;
-        t = clock() - t;
-        _exit(t);
+        fn(NULL);
     } else {
         int status;
         wait(&status);
