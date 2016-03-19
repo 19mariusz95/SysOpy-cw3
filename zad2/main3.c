@@ -6,18 +6,20 @@
 #include <zconf.h>
 #include <sys/wait.h>
 
-int get_dirs_of_first_level(char *path, int argc, char *argv[]);
+int get_dirs_of_first_level(char *path, char *ext, int argc, char *argv[]);
 
 int children = 0;
 
 int main(int argc, char *argv[]) {
     char *path = getenv("PATH_TO_BROWSE");
-    if (path == NULL)
+    char *ext = getenv("EXT_TO_BROWSE");
+    if (path == NULL) {
         path = "./";
-    return get_dirs_of_first_level(path, argc, argv);
+    }
+    return get_dirs_of_first_level(path, ext, argc, argv);
 }
 
-int get_dirs_of_first_level(char *path, int argc, char *argv[]) {
+int get_dirs_of_first_level(char *path, char *ext, int argc, char *argv[]) {
     DIR *dir = opendir(path);
     if (dir == NULL)
         return 0;
@@ -27,7 +29,6 @@ int get_dirs_of_first_level(char *path, int argc, char *argv[]) {
         closedir(dir);
         return 0;
     }
-    char *ext = getenv("EXT_TO_BROWSE");
     int a = 0, b = 0;
     struct dirent *ent;
     size_t len = strlen(path);
@@ -40,14 +41,20 @@ int get_dirs_of_first_level(char *path, int argc, char *argv[]) {
             continue;
         strncpy(fn + len, ent->d_name, FILENAME_MAX - len);
         stat(fn, &filestat);
-        if (ext == NULL)
+        char *etmp = "EXT_TO_BROWSE=";
+        size_t etmpsize = strlen(etmp);
+        char extmp[strlen(ext) + etmpsize + 100];
+        if (ext == NULL) {
             a++;
+            strcpy(extmp, etmp);
+            strcpy(extmp + etmpsize, ext);
+        }
         else {
-            /*char *ala = strrchr(fn, '.');
+            char *ala = strrchr(fn, '.');
             if (ala != NULL) {
                 if (strcmp(ala, ext) == 0)
                     a++;
-            }*/
+            }
         }
         if (S_ISDIR(filestat.st_mode)) {
             pid = fork();
@@ -56,17 +63,10 @@ int get_dirs_of_first_level(char *path, int argc, char *argv[]) {
                 size_t tmp = strlen(e);
                 char tmp1[FILENAME_MAX + tmp];
                 strcpy(tmp1, e);
-                strncpy(tmp1 + tmp, fn, FILENAME_MAX + tmp - len);
+                strncpy(tmp1 + tmp, fn, FILENAME_MAX + tmp);
                 int tn;
                 if (ext != NULL) {
-                    char *etmp = "EXT_TO_BROWSE=";
-                    size_t etmpsize = strlen(etmp);
-                    char extmp[strlen(ext) + etmpsize + 100];
-                    strcpy(extmp, etmp);
-                    strcpy(extmp + etmpsize, ext);
-                    printf(extmp);
-                    char *env[] = {tmp1, extmp};
-                    printf(extmp);
+                    char *env[] = {tmp1};
                     tn = execve("./fcounter3", argv, env);
                 } else {
                     char *env[] = {tmp1};
@@ -79,6 +79,7 @@ int get_dirs_of_first_level(char *path, int argc, char *argv[]) {
         }
     }
     closedir(dir);
+    fflush(stdout);
     for (int i = 1; i < argc; ++i) {
         char *arg = argv[i];
         if (strcmp(arg, "-w") == 0) {
@@ -86,9 +87,11 @@ int get_dirs_of_first_level(char *path, int argc, char *argv[]) {
         }
     }
     for (int i = 0; i < children; ++i) {
-        int status;
+        int status = -1;
         wait(&status);
         b += WEXITSTATUS(status);
+        printf("%d\n", b);
+        fflush(stdout);
     }
     for (int i = 1; i < argc; ++i) {
         char *arg = argv[i];
@@ -97,5 +100,5 @@ int get_dirs_of_first_level(char *path, int argc, char *argv[]) {
             fflush(stdout);
         }
     }
-    return a + b;
+    exit(a + b);
 }
