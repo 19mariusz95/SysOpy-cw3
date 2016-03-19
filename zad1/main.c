@@ -64,7 +64,6 @@ void fun4() {
 
 int main(int argc, char *argv[]) {
 
-    pid_t pid;
     if (argc < 3) {
         printf("Not enough arguments");
         exit(1);
