@@ -11,10 +11,55 @@
 #include <time.h>
 
 int licznik = 0;
+clock_t childtimes = 0;
+void *child_stack;
+
 
 int fn(void *arg) {
     licznik++;
     _exit(0);
+}
+
+void fun1() {
+    pid_t pid = fork();
+    if (pid == 0) {
+        clock_t t = clock();
+        licznik++;
+        t = clock() - t;
+        _exit(t);
+    } else {
+        int status;
+        wait(&status);
+        childtimes += WEXITSTATUS(status);
+    }
+}
+
+void fun2() {
+    pid_t pid = vfork();
+    if (pid == 0) {
+        clock_t t = clock();
+        licznik++;
+        t = clock() - t;
+        _exit(t);
+    } else {
+        int status;
+        wait(&status);
+        childtimes += WEXITSTATUS(status);
+    }
+}
+
+void fun3() {
+    clone(&fn, child_stack, SIGCHLD, NULL);
+    int status;
+    wait(&status);
+    childtimes += WEXITSTATUS(status);
+}
+
+void fun4() {
+    clone(&fn, child_stack, SIGCHLD | CLONE_VM | CLONE_VFORK, NULL);
+    int status;
+    wait(&status);
+    childtimes += WEXITSTATUS(status);
 }
 
 int main(int argc, char *argv[]) {
@@ -32,51 +77,24 @@ int main(int argc, char *argv[]) {
     clock_t starttime = clock();
     char *op = argv[2];
     char option = op[0];
-    void *child_stack = malloc(8192);
-    clock_t childtimes = 0;
+    child_stack = malloc(8192);
     child_stack += 8192;
     for (int i = 0; i < n; i++) {
         switch (option) {
             case 'a': {
-                pid = fork();
-                if (pid == 0) {
-                    clock_t t = clock();
-                    licznik++;
-                    t = clock() - t;
-                    _exit(t);
-                } else {
-                    int status;
-                    wait(&status);
-                    childtimes += WEXITSTATUS(status);
-                }
+                fun1();
                 break;
             }
             case 'b': {
-                pid = vfork();
-                if (pid == 0) {
-                    clock_t t = clock();
-                    licznik++;
-                    t = clock() - t;
-                    _exit(t);
-                } else {
-                    int status;
-                    wait(&status);
-                    childtimes += WEXITSTATUS(status);
-                }
+                fun2();
                 break;
             }
             case 'c': {
-                clone(&fn, child_stack, SIGCHLD, NULL);
-                int status;
-                wait(&status);
-                childtimes += WEXITSTATUS(status);
+                fun3();
                 break;
             }
             case 'd': {
-                clone(&fn, child_stack, SIGCHLD | CLONE_VM | CLONE_VFORK, NULL);
-                int status;
-                wait(&status);
-                childtimes += WEXITSTATUS(status);
+                fun4();
             }
                 break;
             default:
