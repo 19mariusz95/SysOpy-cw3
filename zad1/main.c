@@ -9,6 +9,7 @@
 #include <sys/wait.h>
 #include <sys/resource.h>
 #include <time.h>
+#include <sys/mman.h>
 
 int licznik = 0;
 clock_t childtimes = 0;
@@ -76,7 +77,7 @@ int main(int argc, char *argv[]) {
     clock_t starttime = clock();
     char *op = argv[2];
     char option = op[0];
-    child_stack = malloc(8192);
+    child_stack = mmap(0, 8192, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
     child_stack += 8192;
     for (int i = 0; i < n; i++) {
         switch (option) {
