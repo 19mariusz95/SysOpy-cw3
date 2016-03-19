@@ -6,7 +6,7 @@
 #include <zconf.h>
 #include <sys/wait.h>
 
-void get_dirs_of_first_level(char *path, int i, int i1);
+void get_dirs_of_first_level(char *argv[], char *path, int i, int i1);
 
 int main(int argc, char *argv[]) {
     char *path = getenv("PATH_TO_BROWSE");
@@ -14,11 +14,11 @@ int main(int argc, char *argv[]) {
         path = "./";
     printf("%s\n", path);
     fflush(stdout);
-    get_dirs_of_first_level(path, 0, 0);
+    get_dirs_of_first_level(argv, path, 0, 0);
     return 0;
 }
 
-void get_dirs_of_first_level(char *path, int i, int i1) {
+void get_dirs_of_first_level(char *argv[], char *path, int i, int i1) {
     DIR *dir = opendir(path);
     if (dir == NULL)
         return;
@@ -50,7 +50,7 @@ void get_dirs_of_first_level(char *path, int i, int i1) {
                 strcpy(tmp1, e);
                 strncpy(tmp1 + tmp, fn, FILENAME_MAX + tmp - len);
                 char *env[] = {tmp1};
-                execle("./fcounter1", "", (char *) 0, env);
+                execle(argv[0], "", (char *) 0, env);
                 _exit(0);
             }
         }

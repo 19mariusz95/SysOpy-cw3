@@ -70,10 +70,10 @@ int get_dirs_of_first_level(char *path, char *ext, int argc, char *argv[]) {
                     strcpy(extmp, etmp);
                     strcpy(extmp + etmpsize, ext);
                     char *env[] = {tmp1, extmp, NULL};
-                    tn = execve("./fcounter3", argv, env);
+                    tn = execve(argv[0], argv, env);
                 } else {
                     char *env[] = {tmp1, NULL};
-                    tn = execve("./fcounter3", argv, env);
+                    tn = execve(argv[0], argv, env);
                 }
                 _exit(tn);
             } else {

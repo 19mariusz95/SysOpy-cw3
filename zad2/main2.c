@@ -11,9 +11,15 @@ int get_dirs_of_first_level(char *path, int argc, char *argv[]);
 int chilren = 0;
 
 int main(int argc, char *argv[]) {
-    char *path = argv[1];
-    if (path == NULL)
+    if (argc < 2) {
+        printf("No arguments");
+        exit(1);
+    }
+    char *path;
+    if (argv[1] == NULL)
         path = "./";
+    else
+        path = argv[1];
     return get_dirs_of_first_level(path, argc, argv);
 }
 
@@ -45,7 +51,7 @@ int get_dirs_of_first_level(char *path, int argc, char *argv[]) {
             if (pid == 0) {
                 int tn;
                 argv[1] = fn;
-                tn = execv("./fcounter2", argv);
+                tn = execv(argv[0], argv);
                 _exit(tn);
             } else {
                 chilren++;
