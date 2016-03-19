@@ -46,10 +46,11 @@ int get_dirs_of_first_level(char *path, char *ext, int argc, char *argv[]) {
         }
         else {
             char *ala = strrchr(fn, '.');
-            if (ala != NULL) {
-                printf("%s\n", ala);
+            if (ala != NULL && strlen(ala) > 1) {
+                char *substr = calloc(strlen(ala), 1);
+                strncpy(substr, ala + 1, strlen(ala) - 1);
                 fflush(stdout);
-                if (strcmp(ala, ext) == 0)
+                if (strcmp(substr, ext) == 0)
                     a++;
             }
         }
