@@ -46,10 +46,10 @@ void get_dirs_of_first_level(char *argv[], char *path, int i, int i1) {
             if (pid == 0) {
                 char *e = "PATH_TO_BROWSE=";
                 size_t tmp = strlen(e);
-                char tmp1[FILENAME_MAX + tmp];
+                char tmp1[FILENAME_MAX];
                 strcpy(tmp1, e);
                 strncpy(tmp1 + tmp, fn, FILENAME_MAX + tmp - len);
-                char *env[] = {tmp1};
+                char *env[] = {tmp1, NULL};
                 execle(argv[0], "", (char *) 0, env);
                 _exit(0);
             }

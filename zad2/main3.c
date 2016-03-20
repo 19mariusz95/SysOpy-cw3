@@ -59,7 +59,7 @@ int get_dirs_of_first_level(char *path, char *ext, int argc, char *argv[]) {
             if (pid == 0) {
                 char *e = "PATH_TO_BROWSE=";
                 size_t tmp = strlen(e);
-                char tmp1[FILENAME_MAX + tmp];
+                char tmp1[FILENAME_MAX];
                 strcpy(tmp1, e);
                 strncpy(tmp1 + tmp, fn, FILENAME_MAX + tmp);
                 int tn;
