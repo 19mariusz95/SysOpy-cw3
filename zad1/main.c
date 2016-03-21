@@ -117,6 +117,8 @@ int main(int argc, char *argv[]) {
            rus->ru_utime.tv_sec + rus->ru_stime.tv_sec + rus1->ru_utime.tv_sec + rus1->ru_stime.tv_sec,
            (endtime + childtimes) / CLOCKS_PER_SEC);
 
+    printf("%s %d\n", "Counter: ", licznik);
+
     return 0;
 }
 
