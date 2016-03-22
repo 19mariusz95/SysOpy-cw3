@@ -99,22 +99,22 @@ int main(int argc, char *argv[]) {
         }
     }
     clock_t endtime = clock() - starttime;
-    struct rusage *rus = malloc(sizeof(struct rusage));
-    getrusage(RUSAGE_SELF, rus);
+    struct rusage rus;
+    getrusage(RUSAGE_SELF, &rus);
     printf("System Time: %li, User Time: %li, User+System Time: %li, Real Time: %li\n",
-           rus->ru_stime.tv_sec, rus->ru_utime.tv_sec, rus->ru_utime.tv_sec + rus->ru_stime.tv_sec,
+           rus.ru_stime.tv_sec, rus.ru_utime.tv_sec, rus.ru_utime.tv_sec + rus.ru_stime.tv_sec,
            endtime / CLOCKS_PER_SEC);
     printf("\n");
-    struct rusage *rus1 = malloc(sizeof(struct rusage));
-    getrusage(RUSAGE_CHILDREN, rus1);
+    struct rusage rus1;
+    getrusage(RUSAGE_CHILDREN, &rus1);
     printf("System Time: %li, User Time: %li, User+System Time: %li, Real Time: %li\n",
-           rus1->ru_stime.tv_sec, rus1->ru_utime.tv_sec,
-           rus1->ru_utime.tv_sec + rus1->ru_stime.tv_sec, childtimes / CLOCKS_PER_SEC);
+           rus1.ru_stime.tv_sec, rus1.ru_utime.tv_sec,
+           rus1.ru_utime.tv_sec + rus1.ru_stime.tv_sec, childtimes / CLOCKS_PER_SEC);
     printf("\n");
 
     printf("System Time: %li, User Time: %li, User+System Time: %li, Real Time: %li\n",
-           rus1->ru_stime.tv_sec + rus->ru_stime.tv_sec, rus->ru_utime.tv_sec + rus1->ru_utime.tv_sec,
-           rus->ru_utime.tv_sec + rus->ru_stime.tv_sec + rus1->ru_utime.tv_sec + rus1->ru_stime.tv_sec,
+           rus1.ru_stime.tv_sec + rus.ru_stime.tv_sec, rus.ru_utime.tv_sec + rus1.ru_utime.tv_sec,
+           rus.ru_utime.tv_sec + rus.ru_stime.tv_sec + rus1.ru_utime.tv_sec + rus1.ru_stime.tv_sec,
            (endtime + childtimes) / CLOCKS_PER_SEC);
 
     printf("%s %d\n", "Counter: ", licznik);

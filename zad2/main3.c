@@ -52,6 +52,7 @@ int get_dirs_of_first_level(char *path, char *ext, int argc, char *argv[]) {
                 fflush(stdout);
                 if (strcmp(substr, ext) == 0)
                     a++;
+                free(substr);
             }
         }
         if (S_ISDIR(filestat.st_mode)) {
@@ -71,6 +72,7 @@ int get_dirs_of_first_level(char *path, char *ext, int argc, char *argv[]) {
                     strcpy(extmp + etmpsize, ext);
                     char *env[] = {tmp1, extmp, NULL};
                     tn = execve(argv[0], argv, env);
+                    free(extmp);
                 } else {
                     char *env[] = {tmp1, NULL};
                     tn = execve(argv[0], argv, env);
@@ -87,6 +89,7 @@ int get_dirs_of_first_level(char *path, char *ext, int argc, char *argv[]) {
         char *arg = argv[i];
         if (strcmp(arg, "-w") == 0) {
             sleep(15);
+            break;
         }
     }
     for (int i = 0; i < children; ++i) {
@@ -100,6 +103,7 @@ int get_dirs_of_first_level(char *path, char *ext, int argc, char *argv[]) {
         if (strcmp(arg, "-v") == 0) {
             printf("path: %s my_files: %d all_files %d\n", path, a, a + b);
             fflush(stdout);
+            break;
         }
     }
     exit(a + b);
